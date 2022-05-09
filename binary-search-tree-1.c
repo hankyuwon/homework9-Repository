@@ -101,7 +101,7 @@ int initializeBST(Node** h) // head 노드 생성
     freeBST(*h); // head 초기화
 
     *h=(Node*)malloc(sizeof(Node)); // head 생성, 메모리 할당
-    (*h)->left=NULL; // 초기 값 설정
+    (*h)->left=NULL; // head의 초기 값 설정
     (*h)->right=*h;
     (*h)->key=-9999;
     return 1;
@@ -135,24 +135,117 @@ void postorderTraversal(Node* ptr) // 후위순회 알고리즘
     }
 }
 
-int insert(Node* head, int key)
+int insert(Node* head, int key) // key(입력)값을 key로 받는 노드 생성
 {
+    Node* newNode = (Node*)malloc(sizeof(Node)); // newNode 생성 및 메모리 할당
+    newNode->key=key; // 초기값 설정
+    newNode->left=NULL;
+    newNode->right=NULL;
 
+    if(head->left==NULL) { // 트리가 비어있을 경우
+        head->left = newNode;
+        return 1;
+    }
+
+    Node* ptr= head->left; // 트리가 비어있지 않은 경우 ptr을 레벨 1 노드로 지정
+
+    Node* parentNode = NULL;
+
+    while(ptr!=NULL){ // key값 비교해가며 자리 찾기
+        if(ptr->key==key) return 1; // key 값을 찾으면 return
+
+        parentNode=ptr; // parentNode에 ptr 할당
+
+        if(ptr->key<key) // ptr의 key값보다 입력값이 크면
+        ptr=ptr->right; // 오른쪽으로 이동
+        else
+        ptr=ptr->left; // ptr의 key값보다 입력값이 작으면 왼쪽으로 이동
+    }
+
+    if(parentNode->key>key)
+    parentNode->left=newNode; // 부모노드의 값보다 작으면 왼쪽
+    else
+    parentNode->right=newNode; // 부모노드의 값보다 크면 오른쪽에 저장
+    return 1;
 }
 
-int deleteLeafNode(Node* head, int key)
+int deleteLeafNode(Node* head, int key) // key(입력값)을 key로 갖고있는 노드 삭제
 {
+    if(head==NULL){
+        printf("\n Nothing to delete!\n");
+        return -1;
+    }
 
+    if(head->left==NULL) {
+        printf("\n Nothing to delete!\n");
+        return -1;
+    }
+
+    Node* ptr = head->left; // 트리의 레벨 1 노드를 ptr로 지정
+
+    Node* parentNode=head; // parentNode에 head 할당
+
+    while(ptr!=NULL){
+
+        if(ptr->key==key){ // ptr->key 가 입력값일때
+            if(ptr->left==NULL && ptr->right == NULL) { // 자식노드가 없을 때
+
+                if(parentNode==head) // 부모노드가 head일때, 즉 ptr이 레벨 1의 노드일때
+                head->left=NULL; // head -> left 끊어준 뒤 메모리 해제
+
+                if(parentNode->left==ptr) // parentNode의 left에 ptr이 있을 때, 즉 ptr의 key값이 parentNode의 key보다 작을 때
+                parentNode->left=NULL; 
+                else // ptr의 key 값이 parentNode의 key보다 클 때
+                parentNode->right=NULL;
+
+                free(ptr);
+            }
+            else{
+                printf("the node [%d] is not a leaf \n", ptr->key); // 자식노드가 있을 때
+            }
+            return 1;
+        }
+
+        parentNode = ptr; // parentNode 에 ptr 할당
+
+        if(ptr->key<key) // 입력받은 key값이 ptr->key 보다 클때
+        ptr=ptr->right; // 오른쪽으로 이동
+        else
+        ptr=ptr->left; // 작을 때 왼쪽으로 이동
+    }
+    printf("Cannot find the node for key [%d]\n ", key); // key값을 갖는 노드를 찾지 못했을 때
+
+    return 1;
 }
 
 Node* searchRecursive(Node* ptr, int key)
 {
+    if(ptr==NULL)
+    return NULL;
 
+    if(ptr->key < key)
+    ptr=searchRecursive(ptr->right, key);
+    else if (ptr->key > key)
+    ptr=searchRecursive(ptr->left, key);
+
+    return ptr;
 }
 
 Node* searchIterative(Node* head, int key)
 {
+    Node* ptr=head->left;
 
+    while(ptr!=NULL)
+    {
+        if(ptr->key==key)
+        return ptr;
+
+        if(ptr->key<key) ptr= ptr->right;
+        else
+        ptr=ptr->left;
+    }
+
+    return NULL;
 }
 
 void freeNode(Node* ptr)
