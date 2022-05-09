@@ -61,20 +61,20 @@ int main()
 			case'f':case'F':
 			printf("Your key = ");
 			scanf("%d",&key);
-			ptr=searchIterative(head,key);
+			ptr=searchIterative(head,key); // ptr에 searchIterative의 return 값 할당
 			if(ptr!=NULL)
-			printf("\n node [%d] found at %p\n", ptr->key, ptr);
+			printf("\n node [%d] found at %p\n", ptr->key, ptr); // 해당 key값을 갖고 있는 노드의 주소 출력
 			else
-			printf("\n Cannot find the node [%d]\n", key);
+			printf("\n Cannot find the node [%d]\n", key); // 해당 key값을 갖고있는 노드를 찾지 못한 경우
 			break;
 			case's':case'S':
 			printf("Your key = ");
 			scanf("%d", &key);
-			ptr=searchRecursive(head->left,key);
+			ptr=searchRecursive(head->left,key); // ptr에 searchRecursive의 return값 할당
 			if(ptr!=NULL)
-			printf("\n node [%d] found at %p\n", ptr->key,ptr);
+			printf("\n node [%d] found at %p\n", ptr->key,ptr); // 해당 key값을 갖고있는 노드의 주소 출력
 			else
-			printf("\n Cannot find the node [%d]\n", key);
+			printf("\n Cannot find the node [%d]\n", key); // ptr이 NULL인 경우, 즉 재귀함수로 해당 key값을 갖고있는 노드를 찾지 못한 경우
 			break;
 			case'i':case'I':
 			inorderTraversal(head->left);
@@ -218,42 +218,57 @@ int deleteLeafNode(Node* head, int key) // key(입력값)을 key로 갖고있는
     return 1;
 }
 
-Node* searchRecursive(Node* ptr, int key)
+Node* searchRecursive(Node* ptr, int key) // 재귀함수로 특정 key 값을 갖고있는 노드 찾기
 {
-    if(ptr==NULL)
+    if(ptr==NULL) // 트리가 비어있는 경우 (여기서 ptr은 head->left이며 트리의 레벨 1에 해당하는 부분)
     return NULL;
 
-    if(ptr->key < key)
-    ptr=searchRecursive(ptr->right, key);
-    else if (ptr->key > key)
-    ptr=searchRecursive(ptr->left, key);
+    if(ptr->key < key) // 입력 key 값이 ptr의 key보다 클 경우
+    ptr=searchRecursive(ptr->right, key); // ptr(head->left)로 받은 부분을 ptr->right로 이동하면서 재귀호출
+    else if (ptr->key > key) // 입력 key 값이 ptr의 key보다 작은 경우
+    ptr=searchRecursive(ptr->left, key); // ptr(head->left)로 받은 부분을 ptr->left로 이동하면서 재귀호출
 
-    return ptr;
+    return ptr; //해당 ptr return
 }
 
-Node* searchIterative(Node* head, int key)
+Node* searchIterative(Node* head, int key) // 반복함수로 특정 key 값을 갖고있는 노드 찾기
 {
-    Node* ptr=head->left;
+    Node* ptr=head->left; // ptr을 트리의 레벨 1 에 해당하는 노드로 지정
 
     while(ptr!=NULL)
     {
-        if(ptr->key==key)
-        return ptr;
+        if(ptr->key==key) // ptr의 key값이 입력받은 key 값일 때
+        return ptr; // ptr을 return
 
-        if(ptr->key<key) ptr= ptr->right;
-        else
-        ptr=ptr->left;
+        if(ptr->key<key) ptr= ptr->right; // 입력받은 key값이 ptr의 key값보다 클 때, 오른쪽아래로 이동
+        else // 그렇지 않을때
+        ptr=ptr->left; // 왼쪽 아래로 이동
     }
 
     return NULL;
 }
 
-void freeNode(Node* ptr)
+void freeNode(Node* ptr) // freeBST에서 사용될 함수
 {
-
+    if(ptr) { // ptr의 왼쪽, 오른쪽 freeNode재귀호출
+        freeNode(ptr->left);
+        freeNode(ptr->right);
+        free(ptr); // ptr 메모리 해제
+    }
 }
 
-int freeBST(Node* head)
+int freeBST(Node* head) // 트리 메모리 해제
 {
-	
+	if(head->left==head)
+    {
+        free(head);
+        return 1;
+    }
+
+    Node* p = head->left; // p를 트리의 레벨 1 에 위치한 노드로 지정
+
+    freeNode(p); // freeNode함수는 p와 p의 자식노드들 모두를 메모리 해제하는 함수
+
+    free(head); // head 메모리 해제
+    return 1;
 }
