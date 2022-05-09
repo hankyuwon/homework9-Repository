@@ -25,7 +25,7 @@ int main()
 	Node* ptr=NULL;
 
     printf("----------[2019037002]---------[hankyuwon]---------\n");
-    
+
 	do{
 		printf("\n\n");
 		printf("----------------------------------------------------------------\n");
@@ -95,24 +95,44 @@ int main()
 	return 1;
 }
 
-int initializeBST(Node** h)
+int initializeBST(Node** h) // head 노드 생성
 {
+    if(*h!=NULL) // head 가 NULL이 아니면
+    freeBST(*h); // head 초기화
 
+    *h=(Node*)malloc(sizeof(Node)); // head 생성, 메모리 할당
+    (*h)->left=NULL; // 초기 값 설정
+    (*h)->right=*h;
+    (*h)->key=-9999;
+    return 1;
 }
 
-void inorderTraversal(Node* ptr)
+void inorderTraversal(Node* ptr) // 중위순회 알고리즘
 {
-
+    if(ptr)
+    {
+        inorderTraversal(ptr->left); // 왼쪽 서브트리를 중위순회한다
+        printf(" [%d] ", ptr->key); // 노드를 출력한다
+        inorderTraversal(ptr->right); //오른쪽 서브트리를 중위순회한다
+    }
 }
 
-void preorderTraversal(Node* ptr)
+void preorderTraversal(Node* ptr) // 전위순회
 {
-
+    if(ptr){
+        printf(" [%d] ", ptr->key); // 노드를 출력한다
+        preorderTraversal(ptr->left); // 왼쪽 서브트리를 전위순회한다
+        preorderTraversal(ptr->right); // 오른쪽 서브트리를 전위순회한다
+    }
 }
 
-void postorderTraversal(Node* ptr)
+void postorderTraversal(Node* ptr) // 후위순회 알고리즘
 {
-
+    if(ptr){
+        postorderTraversal(ptr->left); // 왼쪽 서브트리를 후위순회한다
+        postorderTraversal(ptr->right); // 오른쪽 서브트리를 후위순회한다
+        printf(" [%d] ", ptr->key); // 노드를 출력한다
+    }
 }
 
 int insert(Node* head, int key)
